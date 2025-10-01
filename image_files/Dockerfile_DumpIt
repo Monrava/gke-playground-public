@@ -1,0 +1,22 @@
+#################################################################################################
+FROM nginx:latest
+# If you buld this image using a Macbook silicon - use the below config or apply: "docker buildx build --platform linux/amd64"
+#FROM --platform=linux/amd64 nginx:latest
+RUN apt-get update && \
+       apt-get -y install sudo git golang-go liblzma-dev curl cargo zstd && \
+       apt-get update
+
+### for apt to be noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
+
+#########################################################################################################
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+#########################################################################################################
+# DumpIt Build
+RUN git clone https://github.com/MagnetForensics/dumpit-linux.git
+WORKDIR /dumpit-linux
+RUN cargo build --release
+#########################################################################################################

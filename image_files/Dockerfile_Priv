@@ -1,0 +1,18 @@
+FROM alpine:3.14
+# If you buld this image using a Macbook silicon - use the below config or apply: "docker buildx build --platform linux/amd64"
+#FROM --platform=linux/amd64
+RUN apk update
+RUN apk upgrade
+RUN apk add --update --no-cache python3 py-pip zstd zstd-libs curl gcompat vim bash
+RUN apk add gcc python3-dev musl-dev linux-headers
+#
+## Copy the named process memory capture script into container.
+WORKDIR /home
+RUN pwd
+COPY memdump_our_custom.py /home/memdump_our_custom.py
+
+RUN chmod +x /home/memdump_our_custom.py
+
+RUN pip install --upgrade pip setuptools nsenter
+RUN pip install --upgrade psutil
+ENTRYPOINT ["python3"]

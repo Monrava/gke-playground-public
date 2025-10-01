@@ -1,0 +1,26 @@
+services:
+  goose-cli:
+    build:
+      context: https://github.com/block/goose.git#main
+      dockerfile: documentation/docs/docker/Dockerfile
+      args:
+        USER_ID: ${UID:-1000}
+    volumes:
+      # Mount user's directory with read-write access
+      - goose-config:/root/.goose
+    working_dir: /root
+    environment:
+      - OOSE_HOME=/root/.goose
+      # Set default editor
+      - EDITOR=vim
+      - GOOSE_PROVIDER=google
+      - GOOSE_MODEL=gemini-2.0-flash-exp
+      - DBUS_SESSION_BUS_ADDRESS
+      - GNOME_KEYRING_CONTROL
+      - SSH_AUTH_SOCK
+    stdin_open: true
+    tty: true
+    entrypoint: ["/bin/bash"]
+
+volumes:
+  goose-config:

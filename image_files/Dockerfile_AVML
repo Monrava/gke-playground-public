@@ -1,0 +1,41 @@
+#################################################################################################
+FROM nginx:latest
+# If you buld this image using a Macbook silicon - use the below config or apply: "docker buildx build --platform linux/amd64"
+#FROM --platform=linux/amd64 nginx:latest
+
+RUN apt-get update && \
+       apt-get install -y --no-install-recommends apt-utils && \
+       apt-get -y install sudo && \
+       apt-get -y install libssl-dev pkg-config && \
+       apt-get -y install git golang-go && \
+       apt-get -y install procps && \
+       apt-get -y install curl && \
+       apt-get update
+
+### for apt to be noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
+
+RUN echo "tzdata tzdata/Areas select Europe" > /tmp/preseed.txt; \
+    echo "tzdata tzdata/Zones/Europe select Stockholm" >> /tmp/preseed.txt; \
+    debconf-set-selections /tmp/preseed.txt
+#########################################################################################################
+##AVML
+# Install MUSL
+RUN sudo apt-get install musl-dev musl-tools musl
+RUN apt-get update
+ARG RUST_BACKTRACE=full
+ARG CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG=true
+
+# Install rustup
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN git clone https://github.com/microsoft/avml.git
+WORKDIR /avml
+RUN rustup target add x86_64-unknown-linux-musl
+RUN cargo build --release --target x86_64-unknown-linux-musl --no-default-features
+
+# Run below to include upload functionality (Not needed)
+#RUN cargo build --verbose --release --target x86_64-unknown-linux-musl
+#########################################################################################################
