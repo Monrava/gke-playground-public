@@ -1,5 +1,9 @@
 # Insecure GKE Deployment
-A GKE cluster deployment for the most insecure cluster settings possible.  Can be imported as a module for other tests
+A GKE cluster deployment for the most insecure cluster settings possible.  
+Can be imported as a module for other tests
+
+:warning:
+This is an experimental repository for demo/playground purposes. Do not use in production.
 
 ## Configure Local environment
 1. Install gcloud using this link: https://cloud.google.com/sdk/docs/install
@@ -17,6 +21,7 @@ gcloud auth login --update-adc
 Add the following permissions to your gcloud principal in your GCP project.
 ```  	
 Owner
+ServiceAccountTokenCreator
 ```
 Or similar roles that allow for GCE, VPC, IAM and GKE modifications.
 
